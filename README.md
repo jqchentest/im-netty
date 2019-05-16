@@ -1,2 +1,2 @@
 # im-netty
-netty simple IM
+netty实现的IM简单例子
