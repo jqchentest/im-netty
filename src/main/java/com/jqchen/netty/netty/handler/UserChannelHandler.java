@@ -1,7 +1,7 @@
-package com.jqchen.netty.handler;
+package com.jqchen.netty.netty.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jqchen.netty.common.NettyUtils;
+import com.jqchen.netty.utils.NettyUtils;
 import com.jqchen.netty.service.UserService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

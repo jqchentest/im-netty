@@ -1,6 +1,6 @@
 package com.jqchen.netty.netty;
 
-import com.jqchen.netty.handler.UserChannelHandler;
+import com.jqchen.netty.netty.handler.UserChannelHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

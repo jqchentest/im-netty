@@ -1,11 +1,20 @@
 package com.jqchen.netty.service;
 
+import com.jqchen.netty.bean.User;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
  * 用户接口
  */
 public interface UserService {
+
+    /**
+     * 登录
+     *
+     * @param userName 用户名
+     * @param password 密码
+     */
+    User login(String userName, String password);
 
     /**
      * 登录

@@ -1,19 +1,29 @@
 package com.jqchen.netty.service.impl;
 
-import com.jqchen.netty.common.NettyUtils;
-import com.jqchen.netty.common.UserUtils;
+import com.jqchen.netty.bean.User;
+import com.jqchen.netty.utils.NettyUtils;
+import com.jqchen.netty.utils.UserUtils;
 import com.jqchen.netty.service.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户接口实现
  */
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Override
+    public User login(String userName, String password) {
+        return UserUtils.users.entrySet().stream()
+                .filter(entry -> userName.equals(entry.getValue().getName()) && password.equals(entry.getValue().getPassword()))
+                .findFirst()
+                .map(Map.Entry::getValue).orElse(null);
+    }
 
     @Override
     public void login(Long userId, ChannelHandlerContext ctx) {

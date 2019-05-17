@@ -5,27 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
     <title>im</title></head>
     <script src="js/common/jquery-1.9.1.min.js"></script>
     <script src="js/chatroom.js"></script>
 
 <body>
-    <span>
-        <input type="text" id="user-id"/>
-        <button id="login-btn">登录</button><br><br><br>
-    </span>
+    <div class="login-span">
+        <label>用户名</label><input type="text" id="user-name"/><br>
+        <label>密码</label><input type="password" id = "password"><br>
+        <button id="login-btn">登录</button><span class="login-tip"></span><br><br><br>
+    </div>
 
-    <span>
+    <div class="friends-span">
+    </div>
+
+    <div class="message-span">
+        <div class="message-tip"></div>
         <textarea id="content" rows="10" cols="70"></textarea>
         <button id="send-btn">发送</button>
-    </span>
-    <span>
+    </div>
+    <div>
         <h3 id="msg"></h3>
-    </span>
+    </div>
 </body>
 
 <script type="text/javascript">
     var socket;
+    var friendId;
 
     if (!window.WebSocket) {
         window.WebSocket = window.MozWebSocket;
@@ -48,24 +55,74 @@
         alert("您的浏览器不支持WebSocket！");
     }
 
-    // 绑定发送按钮点击事件
+    $('.message-btn').on('click', function () {
+        friendId = $(this).prev().attr("friend-id");
+        $(".message-tip").html($(this).prev().html());
+        $('.message-span').css('display', 'block');
+    })
+
     $('#send-btn').on('click', function () {
         var userId = $('#user-id').val();
-        var friendId = userId / 2;
-        if (friendId < 1) {
-            friendId = 2;
-        }
         var content = $('#content').val();
         $('#content').val("");
         ws.sendContent(userId, friendId, content);
         $('#msg').append("<br/><span style='color:darkgreen'>" + content + "</span>");
     })
 
-    // 绑定发送按钮点击事件
     $('#login-btn').on('click', function () {
-        var userId = $('#user-id').val();
-        ws.login(userId);
+        var userName = $('#user-name').val();
+        var password = $('#password').val();
+        var url = "http://localhost:8099/user/login?userName="+userName+"&password="+password;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            success: function(result) {
+                if (result.success){
+                    var userId= result.result.id;
+                    ws.login(userId);
+                    $(".login-span").css('display','none');
+                    $(".login-tip").css('display','none');
+                    $('.friends-span').css('display', 'block');
+                    getFriends(userId)
+                }else {
+                    $("#password").val('');
+                    $(".login-tip").html(result.msg);
+                }
+            }
+        });
     })
+    function getFriends(userId) {
+        var url = "http://localhost:8099/user/friends?userId="+userId;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'json',
+            success: function(result) {
+                if (result.success){
+                    var friendHtml ='';
+                    console.log(result)
+                    for (var index in result.result) {
+                        var friend = result.result[index];
+                        console.log(friend)
+                        if (friend.onlineStatus==='ONLINE'){
+                            friendHtml+='<li friend-id="'+friend.id+'">'+friend.name+'</li><button class="message-btn">聊天</button><br>';
+                        } else{
+                            friendHtml+='<li class="offline" friend-id="'+friend.id+'">'+friend.name+'</li><button class="message-btn">聊天</button><br>';
+                        }
+                    }
+                    $('.friends-span').html(friendHtml);
+                }
+            }
+        });
+    }
 </script>
 
+<style type="text/css">
+    .login-tip{color:red}
+    .friends-span li{margin-right: 10px; float: left;}
+    .message-span,.friends-span{display: none}
+    .message-span{margin-top: 20px}
+    .offline{color: red}
+</style>
 </html>
