@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.jqchen.netty</groupId>
-    <artifactId>test-netty</artifactId>
+    <artifactId>im-netty</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>test-netty</name>
+    <name>im-netty</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
