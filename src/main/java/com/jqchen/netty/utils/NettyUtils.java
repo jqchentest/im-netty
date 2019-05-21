@@ -18,4 +18,16 @@ public class NettyUtils {
     public static void writeAndFlush(ChannelHandlerContext ctx, String message) {
         ctx.channel().writeAndFlush(new TextWebSocketFrame(message));
     }
+
+    public static ChannelHandlerContext getUserCtx(Long userId) {
+        return userCtxs.get(userId);
+    }
+
+    public static void putUserCtx(Long userId, ChannelHandlerContext ctx) {
+        userCtxs.put(userId, ctx);
+    }
+
+    public static void removeUserCtx(Long userId) {
+        userCtxs.remove(userId);
+    }
 }

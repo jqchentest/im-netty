@@ -1,12 +1,21 @@
 package com.jqchen.netty.service;
 
 import com.jqchen.netty.bean.User;
-import io.netty.channel.ChannelHandlerContext;
+
+import java.util.List;
 
 /**
  * 用户接口
  */
 public interface UserService {
+
+    /**
+     * 根据主键获取
+     *
+     * @param id
+     * @return
+     */
+    User get(Long id);
 
     /**
      * 登录
@@ -17,28 +26,15 @@ public interface UserService {
     User login(String userName, String password);
 
     /**
-     * 登录
-     *
-     * @param ctx
-     * @param userId
+     * 获取离线消息
      */
-    void login(Long userId, ChannelHandlerContext ctx);
+    List<String> getLeaveMessages(Long userId);
 
     /**
-     * 发消息
+     * 发离线消息
      *
-     * @param userId
      * @param friendId
      * @param message
      */
-    void sendMessage(Long userId, Long friendId, String message);
-
-    /**
-     * 登出
-     *
-     * @param userId
-     * @param ctx
-     */
-    void logout(Long userId, ChannelHandlerContext ctx);
+    void sendLeaveMessage(Long friendId, String message);
 }
-

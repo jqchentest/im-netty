@@ -6,8 +6,12 @@ import java.util.Set;
 
 /**
  * 好友接口
- * 2019-05-17 @author chenjunqiang
  */
 public interface FriendService {
+
+    /**
+     * 获取朋友列表
+     * @param userId 用户id
+     */
     Set<Friend> getFriends(Long userId);
 }
