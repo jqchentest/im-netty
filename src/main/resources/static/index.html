@@ -13,8 +13,9 @@
 <body>
     <div class="login-span">
         <label>用户名</label><input type="text" id="user-name"/><br>
-        <label>密码</label><input type="password" id = "password"><br>
+        <label>密码</label><input type="password" id = "password" value="123"><br>
         <button id="login-btn">登录</button><span class="login-tip"></span><br><br><br>
+        <input type="hidden" id="user-id" />
     </div>
 
     <div class="friends-span">
@@ -33,6 +34,7 @@
 <script type="text/javascript">
     var socket;
     var friendId;
+    var friendName;
 
     if (!window.WebSocket) {
         window.WebSocket = window.MozWebSocket;
@@ -40,7 +42,17 @@
     if (window.WebSocket) {
         socket = new WebSocket("ws://localhost:8988");
         socket.onmessage = function (event) {
-            $('#msg').append("<br/><span style='color:darkkhaki'>" + event.data + "</span>");
+            try {
+                var json = JSON.parse(event.data);
+                console.log(json)
+                if (json.type==='friendOnline'){
+                    var friendId = json.friendId;
+                    $('li[friend-id="'+friendId+'"]').removeAttr("class","offline");
+                    $('#msg').append("<br/><span style='color:darkkhaki'>" + json.message + "</span>");
+                }
+            }catch (e) {
+                $('#msg').append("<br/><span style='color:darkkhaki'>" + event.data + "</span>");
+            }
         };
 
         // 连接成功1秒后，将用户信息注册到服务器在线用户表
@@ -55,21 +67,25 @@
         alert("您的浏览器不支持WebSocket！");
     }
 
-    $('.message-btn').on('click', function () {
+    //聊天按钮
+    $('.friends-span').on('click','.message-btn', function () {
         friendId = $(this).prev().attr("friend-id");
-        $(".message-tip").html($(this).prev().html());
+        friendName = $(this).prev().html();
         $('.message-span').css('display', 'block');
-    })
+        $(".message-tip").html(friendName);
+    });
 
-    $('#send-btn').on('click', function () {
+    //发送信息按钮
+    $('#send-btn').on('click',function () {
         var userId = $('#user-id').val();
         var content = $('#content').val();
         $('#content').val("");
         ws.sendContent(userId, friendId, content);
-        $('#msg').append("<br/><span style='color:darkgreen'>" + content + "</span>");
-    })
+        $('#msg').append("<br/><span class='msg-tip'>对<span class='msg-friend-name'>" + friendName + "</span>说:" + content + "</span>");
+    });
 
-    $('#login-btn').on('click', function () {
+    //登录按钮
+    $('#login-btn').on('click',function () {
         var userName = $('#user-name').val();
         var password = $('#password').val();
         var url = "http://localhost:8099/user/login?userName="+userName+"&password="+password;
@@ -84,14 +100,17 @@
                     $(".login-span").css('display','none');
                     $(".login-tip").css('display','none');
                     $('.friends-span').css('display', 'block');
-                    getFriends(userId)
+                    getFriends(userId);
+                    $('#user-id').val(userId);
                 }else {
                     $("#password").val('');
                     $(".login-tip").html(result.msg);
                 }
             }
         });
-    })
+    });
+
+    //获取好友列表
     function getFriends(userId) {
         var url = "http://localhost:8099/user/friends?userId="+userId;
         $.ajax({
@@ -101,10 +120,8 @@
             success: function(result) {
                 if (result.success){
                     var friendHtml ='';
-                    console.log(result)
                     for (var index in result.result) {
                         var friend = result.result[index];
-                        console.log(friend)
                         if (friend.onlineStatus==='ONLINE'){
                             friendHtml+='<li friend-id="'+friend.id+'">'+friend.name+'</li><button class="message-btn">聊天</button><br>';
                         } else{
@@ -124,5 +141,7 @@
     .message-span,.friends-span{display: none}
     .message-span{margin-top: 20px}
     .offline{color: red}
+    .msg-tip{color:darkolivegreen}
+    .msg-friend-name{color:red}
 </style>
 </html>

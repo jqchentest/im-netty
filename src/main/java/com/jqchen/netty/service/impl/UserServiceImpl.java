@@ -1,5 +1,6 @@
 package com.jqchen.netty.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jqchen.netty.bean.User;
 import com.jqchen.netty.utils.NettyUtils;
 import com.jqchen.netty.utils.UserUtils;
@@ -30,6 +31,26 @@ public class UserServiceImpl implements UserService {
         NettyUtils.userCtxs.put(userId, ctx);
         NettyUtils.writeAndFlush(ctx, UserUtils.users.get(userId).getName() + " 登录成功");
         getLeaveMessage(userId, ctx);
+        notifyFriendOnline(userId);
+    }
+
+    /**
+     * 通知好友上线
+     */
+    private void notifyFriendOnline(Long userId) {
+        User user = UserUtils.users.get(userId);
+        if (UserUtils.friends.containsKey(userId)) {
+            UserUtils.friends.get(userId).forEach(friend -> {
+                if (NettyUtils.userCtxs.containsKey(friend.getId())) {
+                    JSONObject json = new JSONObject();
+                    json.put("type", "friendOnline");
+                    json.put("friendId",userId);
+                    json.put("message", "你的好友" + user.getName() + "上线了");
+                    NettyUtils.writeAndFlush(NettyUtils.userCtxs.get(friend.getId()), json.toJSONString());
+                }
+            });
+        }
+
     }
 
     @Override

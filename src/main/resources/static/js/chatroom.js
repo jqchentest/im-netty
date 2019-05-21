@@ -25,6 +25,7 @@
                     "content" : content,
                     "type" : "send"
                 };
+                console.log(data);
                 socket.send(JSON.stringify(data));
             } else {
                 alert("Websocket连接没有开启！");
