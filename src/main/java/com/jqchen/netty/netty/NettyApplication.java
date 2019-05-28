@@ -23,6 +23,7 @@ public class NettyApplication {
         nettyServer.init();
 //        nettyClient.init();
     }
+
     @PreDestroy
     public void close() {
         log.info("正在释放Netty Websocket相关连接...");

@@ -27,7 +27,8 @@ public class UserChannelHandler extends ChannelInboundHandlerAdapter {
                 userSocketService.login(json.getLong("userId"), ctx);
                 break;
             case "send":
-                userSocketService.sendMessage(json.getLong("userId"), json.getLong("friendId"), json.getString("content"));
+                userSocketService.sendMessage(json.getLong("userId"), json.getLong("friendId"), json.getString(
+                        "content"));
                 break;
             case "logout":
                 userSocketService.logout(json.getLong("userId"), ctx);

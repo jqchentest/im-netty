@@ -7,28 +7,29 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <title>im</title></head>
-    <script src="js/common/jquery-1.9.1.min.js"></script>
-    <script src="js/chatroom.js"></script>
+<script src="js/common/jquery-1.9.1.min.js"></script>
+<script src="js/chatroom.js"></script>
 
 <body>
-    <div class="login-span">
-        <label>用户名</label><input type="text" id="user-name"/><br>
-        <label>密码</label><input type="password" id = "password" value="123"><br>
-        <button id="login-btn">登录</button><span class="login-tip"></span><br><br><br>
-        <input type="hidden" id="user-id" />
-    </div>
+<div class="login-span">
+    <label>用户名</label><input type="text" id="user-name"/><br>
+    <label>密码</label><input type="password" id="password" value="123"><br>
+    <button id="login-btn">登录</button>
+    <span class="login-tip"></span><br><br><br>
+    <input type="hidden" id="user-id"/>
+</div>
 
-    <div class="friends-span">
-    </div>
+<div class="friends-span">
+</div>
 
-    <div class="message-span">
-        <div class="message-tip"></div>
-        <textarea id="content" rows="10" cols="70"></textarea>
-        <button id="send-btn">发送</button>
-    </div>
-    <div>
-        <h3 id="msg"></h3>
-    </div>
+<div class="message-span">
+    <div class="message-tip"></div>
+    <textarea id="content" rows="10" cols="70"></textarea>
+    <button id="send-btn">发送</button>
+</div>
+<div>
+    <h3 id="msg"></h3>
+</div>
 </body>
 
 <script type="text/javascript">
@@ -45,12 +46,12 @@
             try {
                 var json = JSON.parse(event.data);
                 console.log(json)
-                if (json.type==='friendOnline'){
+                if (json.type === 'friendOnline') {
                     var friendId = json.friendId;
-                    $('li[friend-id="'+friendId+'"]').removeAttr("class","offline");
+                    $('li[friend-id="' + friendId + '"]').removeAttr("class", "offline");
                     $('#msg').append("<br/><span style='color:darkkhaki'>" + json.message + "</span>");
                 }
-            }catch (e) {
+            } catch (e) {
                 $('#msg').append("<br/><span style='color:darkkhaki'>" + event.data + "</span>");
             }
         };
@@ -68,7 +69,7 @@
     }
 
     //聊天按钮
-    $('.friends-span').on('click','.message-btn', function () {
+    $('.friends-span').on('click', '.message-btn', function () {
         friendId = $(this).prev().attr("friend-id");
         friendName = $(this).prev().html();
         $('.message-span').css('display', 'block');
@@ -76,7 +77,7 @@
     });
 
     //发送信息按钮
-    $('#send-btn').on('click',function () {
+    $('#send-btn').on('click', function () {
         var userId = $('#user-id').val();
         var content = $('#content').val();
         $('#content').val("");
@@ -85,24 +86,24 @@
     });
 
     //登录按钮
-    $('#login-btn').on('click',function () {
+    $('#login-btn').on('click', function () {
         var userName = $('#user-name').val();
         var password = $('#password').val();
-        var url = "http://localhost:8099/user/login?userName="+userName+"&password="+password;
+        var url = "/user/login?userName=" + userName + "&password=" + password;
         $.ajax({
             type: "GET",
             url: url,
             dataType: 'json',
-            success: function(result) {
-                if (result.success){
-                    var userId= result.result.id;
+            success: function (result) {
+                if (result.success) {
+                    var userId = result.result.id;
                     ws.login(userId);
-                    $(".login-span").css('display','none');
-                    $(".login-tip").css('display','none');
+                    $(".login-span").css('display', 'none');
+                    $(".login-tip").css('display', 'none');
                     $('.friends-span').css('display', 'block');
                     getFriends(userId);
                     $('#user-id').val(userId);
-                }else {
+                } else {
                     $("#password").val('');
                     $(".login-tip").html(result.msg);
                 }
@@ -112,20 +113,20 @@
 
     //获取好友列表
     function getFriends(userId) {
-        var url = "http://localhost:8099/user/friends?userId="+userId;
+        var url = "/user/friends?userId=" + userId;
         $.ajax({
             type: "GET",
             url: url,
             dataType: 'json',
-            success: function(result) {
-                if (result.success){
-                    var friendHtml ='';
+            success: function (result) {
+                if (result.success) {
+                    var friendHtml = '';
                     for (var index in result.result) {
                         var friend = result.result[index];
-                        if (friend.onlineStatus==='ONLINE'){
-                            friendHtml+='<li friend-id="'+friend.id+'">'+friend.name+'</li><button class="message-btn">聊天</button><br>';
-                        } else{
-                            friendHtml+='<li class="offline" friend-id="'+friend.id+'">'+friend.name+'</li><button class="message-btn">聊天</button><br>';
+                        if (friend.onlineStatus === 'ONLINE') {
+                            friendHtml += '<li friend-id="' + friend.id + '">' + friend.name + '</li><button class="message-btn">聊天</button><br>';
+                        } else {
+                            friendHtml += '<li class="offline" friend-id="' + friend.id + '">' + friend.name + '</li><button class="message-btn">聊天</button><br>';
                         }
                     }
                     $('.friends-span').html(friendHtml);
@@ -136,12 +137,33 @@
 </script>
 
 <style type="text/css">
-    .login-tip{color:red}
-    .friends-span li{margin-right: 10px; float: left;}
-    .message-span,.friends-span{display: none}
-    .message-span{margin-top: 20px}
-    .offline{color: red}
-    .msg-tip{color:darkolivegreen}
-    .msg-friend-name{color:red}
+    .login-tip {
+        color: red
+    }
+
+    .friends-span li {
+        margin-right: 10px;
+        float: left;
+    }
+
+    .message-span, .friends-span {
+        display: none
+    }
+
+    .message-span {
+        margin-top: 20px
+    }
+
+    .offline {
+        color: red
+    }
+
+    .msg-tip {
+        color: darkolivegreen
+    }
+
+    .msg-friend-name {
+        color: red
+    }
 </style>
 </html>
