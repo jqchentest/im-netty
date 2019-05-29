@@ -3,3 +3,7 @@
 target/
 *.iml
 .gradle/
+out/
+build/
+.DS_Store
+*/.DS_Store
